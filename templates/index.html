@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Estoque PET ELÉTRICA</title>
+    <link rel="stylesheet" href="../static/style.css" />
+    <link rel="shortcut icon" href="../static/logo.png" type="image/x-icon" />
+  </head>
+
+  <body>
+    <div class="container">
+      <header>
+        <h1>Estoque PET ELÉTRICA</h1>
+        <button onclick="showUsers()">Usuários</button>
+        <button onclick="showItems()">Estoque</button>
+        <button onclick="showDelayedItems()">Atrasados</button>
+      </header>
+
+      <section id="userSection" style="display: none">
+        <div class="pesquisa_e_cadastro">
+          <input
+          type="text"
+          id="userSearch"
+          placeholder="Pesquisar Usuário"
+          oninput="searchUsers()"
+        />
+        <button onclick="showAddUserPopup()">Cadastrar Usuário</button>
+        </div>
+        
+
+        <div id="userResults" class="user-results"></div>
+      </section>
+      <section id="itemSection" style="display: none">
+        <input
+          type="text"
+          id="itemSearch"
+          placeholder="Pesquisar Item"
+          oninput="searchItems()"
+        />
+        <button onclick="showAddItemPopup()">Adicionar Item</button>
+        <div id="itemResults" class="item-results"></div>
+      </section>
+    </div>
+    <!-- Popup para Itens do Atrasados -->
+    <div id="itemsDelayedPopup" class="popup">
+      <div class="popup-content">
+        <span class="close-btn" onclick="hideitemsDelayedPopup()">&times;</span>
+        <div id="itemsDelayedContent"></div>
+      </div>
+    </div>
+    <!-- Popup para Editar Itens -->
+    <div id="editItemPopup" class="popup">
+      <div class="popup-content">
+        <span class="close-btn" onclick="closeEditItemPopup()">&times;</span>
+        <h3>Editar Item</h3>
+        <form id="editItemForm">
+          <input type="hidden" id="editItemId" name="item_id" />
+          <label for="editItemName">Nome do Item:</label>
+          <input type="text" id="editItemName" name="item_name" required />
+          <label for="editItemQuantity">Quantidade:</label>
+          <input
+            type="number"
+            id="editItemQuantity"
+            name="item_quantity"
+            required
+          />
+          <label for="editItemLocation">Localização:</label>
+          <input
+            type="number"
+            id="editItemLocation"
+            name="item_location"
+            required
+          />
+          <button type="submit">Salvar Alterações</button>
+          <!-- Botão para excluir item -->
+          <button
+            type="button"
+            onclick="deleteItem()"
+            style="background-color: red; color: white"
+          >
+            Excluir Item
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Popup para Adicionar Usuário -->
+    <div id="addUserPopup" class="popup">
+      <div class="popup-content">
+        <span class="close-btn" onclick="hidePopup()">&times;</span>
+        <h2>Cadastrar Novo Usuário</h2>
+        <label for="cpf">CPF:</label>
+        <input type="text" id="cpf" placeholder="12345678901" />
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" placeholder="Zézinho da Silva" />
+        <label for="curso">Curso:</label>
+        <input type="text" id="curso" placeholder="Engenharia de Produção" />
+        <label for="telefone">Telefone:</label>
+        <input type="text" id="telefone" placeholder="34912345678" />
+        <label for="email">E-mail:</label>
+        <input type="text" id="email" placeholder="zezin_silva@ufu.br" />
+        <button onclick="addUser()">Adicionar</button>
+      </div>
+    </div>
+    <!-- Popup para Adicionar Itens -->
+    <div id="addItemPopup" class="popup" style="display: none">
+      <div class="popup-content">
+        <span class="close-btn" onclick="hideAddItemPopup()">&times;</span>
+        <h3>Adicionar Item ao Estoque</h3>
+        <form id="addItemForm">
+          <label for="addItemName">Nome do Item:</label>
+          <input type="text" id="addItemName" name="item_name" required />
+
+          <label for="addItemQuantity">Quantidade:</label>
+          <input
+            type="number"
+            id="addItemQuantity"
+            name="item_quantity"
+            required
+          />
+
+          <label for="addItemLocation">Localização:</label>
+          <input
+            type="number"
+            id="addItemLocation"
+            name="item_location"
+            required
+          />
+
+          <button type="submit">Adicionar</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Popup para Itens do Usuário -->
+    <div id="userItemsPopup" class="popup">
+      <div class="popup-content">
+        <span class="close-btn" onclick="hideUserItemsPopup()">&times;</span>
+        <h2>Empréstimos ao Usuário</h2>
+        <div id="userItemsContent"></div>
+      </div>
+    </div>
+
+    <!-- Popup para Itens do Atrasados -->
+    <div id="itemsDelayedPopup" class="popup">
+      <div class="popup-content">
+        <span class="close-btn" onclick="hideitemsDelayedPopup()">&times;</span>
+        <div id="itemsDelayedContent"></div>
+      </div>
+    </div>
+
+    <!-- Popup de Edição de Usuário -->
+    <div id="editUserPopup" class="popup" style="display: none">
+      <div class="popup-content">
+        <span class="close-btn" onclick="closeEditUserPopup()">&times;</span>
+        <h2>Editar Usuário</h2>
+        <form id="editUserForm">
+          <input type="hidden" id="editUserId" />
+          <label for="editUserName">Nome:</label>
+          <input type="text" id="editUserName" required />
+          <label for="editUserCPF">CPF:</label>
+          <input type="text" id="editUserCPF" required />
+          <label for="editUserPhone">Telefone:</label>
+          <input type="text" id="editUserPhone" required />
+          <label for="editUserCourse">Curso:</label>
+          <input type="text" id="editUserCourse" required />
+          <label for="editUserEmail">E-mail:</label>
+          <input type="text" id="editUserEmail" required />
+          <button type="submit">Salvar</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Popup para Emprestar Itens -->
+    <div id="borrowItemPopup" class="popup">
+      <div class="popup-content">
+        <span class="close-btn" onclick="hideBorrowItemPopup()">&times;</span>
+        <h2>Emprestar Item</h2>
+
+        <label for="searchItemInput">Pesquisar Item:</label>
+        <input type="text" id="searchItemInput" placeholder="Pesquisar..." />
+        <div id="itemSelectContainer">
+          <select id="itemSelect"></select>
+          <label for="itemQuantityInput">Quantidade:</label>
+          <input
+            type="number"
+            id="itemQuantityInput"
+            min="1"
+            value="1"
+            required
+          />
+          <label for="DevolucaoPrevistaInput"
+            >Data prevista de devolução:</label
+          >
+          <input type="date" id="DevolucaoPrevistaInput" min="">
+          <script>
+            // Obtém a data atual no formato YYYY-MM-DD
+            const hoje = new Date().toISOString().split('T')[0];
+            // Define o atributo 'min' para a data de hoje
+            document.getElementById('DevolucaoPrevistaInput').setAttribute('min', hoje);
+        </script>
+        </div>
+
+        <button style="background: green;" onclick="borrowItemList()">Adicionar Item</button>
+        <button style="background: red;" onclick="limparLista()">Limpar Lista</button>
+        <button style="background: linear-gradient(135deg, #009688, #00796b);" onclick="borrowItem()">Finalizar Empréstimo</button>
+        <div></div>
+          <ul id="lista_de_itens"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popup para Devolver Itens -->
+    <div id="returnItemPopup" class="popup" style="display: none">
+      <div class="popup-content">
+        <span class="close-btn" onclick="hideReturnItemPopup()">&times;</span>
+        <h2>Devolver Item</h2>
+        <p>Você tem certeza que deseja devolver este item?</p>
+        <button onclick="returnItem()">Devolver</button>
+        <button onclick="hideReturnItemPopup()">Cancelar</button>
+      </div>
+    </div>
+
+    <script src="../static/script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  </body>
+</html>
